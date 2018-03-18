@@ -59,8 +59,6 @@ class AttemptsAPI: APIEndpoint {
 
     @discardableResult func retrieve(stepName: String, stepId: Int, headers: [String: String] = AuthInfo.shared.initialHTTPHeaders, success: @escaping ([Attempt], Meta) -> Void, error errorHandler: @escaping (String) -> Void) -> Request? {
 
-        let headers = AuthInfo.shared.initialHTTPHeaders
-
         var params: Parameters = [:]
         params["step"] = stepId
         if let userid = AuthInfo.shared.userId {

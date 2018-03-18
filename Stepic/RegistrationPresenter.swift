@@ -41,9 +41,7 @@ class RegistrationPresenter {
     func register(with name: String, email: String, password: String) {
         view?.state = .loading
 
-        checkToken().then { () -> Promise<()> in
-            self.authAPI.signUpWithAccount(firstname: name, lastname: " ", email: email, password: password)
-        }.then { _ -> Promise<(StepicToken, AuthorizationType)> in
+        self.authAPI.signUpWithAccount(firstname: name, lastname: " ", email: email, password: password).then { _ -> Promise<(StepicToken, AuthorizationType)> in
             self.authAPI.signInWithAccount(email: email, password: password)
         }.then { token, authorizationType -> Promise<User> in
             AuthInfo.shared.token = token

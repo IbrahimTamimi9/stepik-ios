@@ -222,9 +222,8 @@ class BaseCardsStepsPresenter: CardsStepsPresenter, StepCardViewDelegate {
             strongSelf.state = .loading
 
             let startPromise = (strongSelf.useRatingSynchronization && strongSelf.shouldSyncRating) ? strongSelf.syncRatingAndStreak(for: course) : Promise(value: ())
-            checkToken().then {
-                startPromise
-            }.then {
+
+            startPromise.then {
                 strongSelf.getNewRecommendation(for: course)
             }.then { lesson -> Promise<Step> in
                 title = lesson.title

@@ -11,8 +11,10 @@ import SwiftyJSON
 import Alamofire
 import PromiseKit
 
-class EnrollmentsAPI {
-    let name = "enrollments"
+class EnrollmentsAPI: APIEndpoint {
+    override var name: String {
+        return "enrollments"
+    }
 
     func joinCourse(_ course: Course, delete: Bool = false) -> Promise<Void> {
         return Promise { fulfill, reject in
@@ -34,7 +36,7 @@ class EnrollmentsAPI {
         ]
 
         if !delete {
-            return Alamofire.request("\(StepicApplicationsInfo.apiURL)/\(name)", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers).responseSwiftyJSON({
+            return manager.request("\(StepicApplicationsInfo.apiURL)/\(name)", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers).validate().responseSwiftyJSON({
                 response in
 
                 var error = response.result.error
@@ -64,7 +66,7 @@ class EnrollmentsAPI {
                 }
             })
         } else {
-            return Alamofire.request("\(StepicApplicationsInfo.apiURL)/enrollments/\(course.id)", method: .delete, parameters: params, encoding: URLEncoding.default, headers: headers).responseSwiftyJSON({
+            return manager.request("\(StepicApplicationsInfo.apiURL)/enrollments/\(course.id)", method: .delete, parameters: params, encoding: URLEncoding.default, headers: headers).responseSwiftyJSON({
                 response in
 
                 var error = response.result.error

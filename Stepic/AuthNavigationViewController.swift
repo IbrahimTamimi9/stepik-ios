@@ -41,9 +41,7 @@ class AuthNavigationViewController: UINavigationController {
             return
         }
         let userActivitiesAPI = UserActivitiesAPI()
-        checkToken().then {
-            userActivitiesAPI.retrieve(user: userId)
-        }.then {
+        userActivitiesAPI.retrieve(user: userId).then {
             userActivity -> Void in
             if userActivity.didSolveThisWeek && self.streaksNotificationSuggestionManager.canShowAlert(context: .streak, after: .login) {
                 self.streaksNotificationSuggestionManager.didShowAlert(context: .streak)

@@ -172,14 +172,7 @@ class CourseListPresenter {
 
     private func subscribe(to course: Course) {
         self.view?.startProgressHUD()
-        checkToken().then {
-            [weak self]
-            () -> Promise<Course> in
-            guard let strongSelf = self else {
-                throw CourseSubscriber.CourseSubscriptionError.error(status: "")
-            }
-            return strongSelf.subscriber.join(course: course)
-        }.then {
+        subscriber.join(course: course).then {
             [weak self]
             course -> Void in
             self?.view?.finishProgressHUD(success: true, message: "")
@@ -305,8 +298,6 @@ class CourseListPresenter {
     func refresh() {
         displayCachedAsyncIfEmpty().then {
             self.updateState()
-        }.then {
-            checkToken()
         }.then {
             [weak self] in
             self?.refreshCourses()

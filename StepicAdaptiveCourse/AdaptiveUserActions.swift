@@ -30,9 +30,7 @@ class AdaptiveUserActions {
 
     func registerNewUser() -> Promise<Void> {
         return Promise { fulfill, reject in
-            checkToken().then {
-                self.registerAdaptiveUser()
-            }.then { email, password -> Promise<User> in
+            self.registerAdaptiveUser().then { email, password -> Promise<User> in
                 self.logInUser(email: email, password: password)
             }.then { user -> Promise<Void> in
                 self.unregisterFromEmail(user: user)
