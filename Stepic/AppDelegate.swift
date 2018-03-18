@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        AuthInfo.shared.token = StepicToken(accessToken: "UuthANqtI03mcvu0LTYOnvMOsK9flb", refreshToken: "0yNCxaVuocPVireYIqoeno8Sdahe18", tokenType: "Bearer", expireDate: Date())
+//        AuthInfo.shared.token = StepicToken(accessToken: "UuthANqtI03mcvu0LTYOnvMOsK9flb", refreshToken: "0yNCxaVuocPVireYIqoeno8Sdahe18", tokenType: "Bearer", expireDate: Date())
 
         AnalyticsHelper.sharedHelper.setupAnalytics()
 

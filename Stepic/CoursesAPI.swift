@@ -19,7 +19,7 @@ class CoursesAPI: APIEndpoint {
     }
 
     @discardableResult func retrieve(ids: [Int], headers: [String: String] = AuthInfo.shared.initialHTTPHeaders, existing: [Course]) -> Promise<[Course]> {
-        return getObjectsByIds(ids: ids, updating: existing)
+        return checkToken().then { self.getObjectsByIds(ids: ids, updating: existing) }
     }
 
     @discardableResult func retrieve(tag: Int? = nil, featured: Bool? = nil, enrolled: Bool? = nil, excludeEnded: Bool? = nil, isPublic: Bool? = nil, order: String? = nil, language: ContentLanguage? = nil, page: Int = 1, headers: [String: String] = AuthInfo.shared.initialHTTPHeaders, success successHandler: @escaping ([Course], Meta) -> Void, error errorHandler: @escaping (Error) -> Void) -> Request? {
@@ -55,7 +55,7 @@ class CoursesAPI: APIEndpoint {
 
         params["page"] = page
 
-        return manager.request("\(StepicApplicationsInfo.apiURL)/\(name)", parameters: params, encoding: URLEncoding.default, headers: headers).validate().responseSwiftyJSON({ response in
+        return manager.request("\(StepicApplicationsInfo.apiURL)/\(name)", parameters: params, encoding: URLEncoding.default).validate().responseSwiftyJSON({ response in
             switch response.result {
 
             case .failure(let error):
@@ -91,13 +91,18 @@ class CoursesAPI: APIEndpoint {
     //Could wrap retrieveDisplayedIds 
     @discardableResult func retrieve(tag: Int? = nil, featured: Bool? = nil, enrolled: Bool? = nil, excludeEnded: Bool? = nil, isPublic: Bool? = nil, order: String? = nil, language: ContentLanguage? = nil, page: Int = 1, headers: [String: String] = AuthInfo.shared.initialHTTPHeaders) -> Promise<([Course], Meta)> {
         return Promise { fulfill, reject in
-            retrieve(tag: tag, featured: featured, enrolled: enrolled, excludeEnded: excludeEnded, isPublic: isPublic, order: order, language: language, page: page, headers: headers, success: {
-                courses, meta in
-                fulfill((courses, meta))
-            }, error: {
+            checkToken().then {
+                self.retrieve(tag: tag, featured: featured, enrolled: enrolled, excludeEnded: excludeEnded, isPublic: isPublic, order: order, language: language, page: page, headers: headers, success: {
+                    courses, meta in
+                    fulfill((courses, meta))
+                }, error: {
+                    error in
+                    reject(error)
+                })
+            }.catch {
                 error in
                 reject(error)
-            })
+            }
         }
     }
 }

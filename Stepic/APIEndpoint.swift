@@ -71,28 +71,30 @@ class APIEndpoint {
                 "ids": ids
             ]
 
-            manager.request("\(StepicApplicationsInfo.apiURL)/\(name)", parameters: params, encoding: URLEncoding.default, headers: headers).validate().responseSwiftyJSON { response in
-                switch response.result {
+            checkToken().then {
+                self.manager.request("\(StepicApplicationsInfo.apiURL)/\(name)", parameters: params, encoding: URLEncoding.default, headers: headers).validate().responseSwiftyJSON { response in
+                    switch response.result {
 
-                case .failure(let error):
-                    reject(RetrieveError(error: error))
+                    case .failure(let error):
+                        reject(RetrieveError(error: error))
 
-                case .success(let json):
-                    let jsonArray: [JSON] = json[name].array ?? []
-                    let resultArray: [T] = jsonArray.map {
-                        objectJSON in
-                        if let recoveredIndex = updating.index(where: { $0.hasEqualId(json: objectJSON) }) {
-                            updating[recoveredIndex].update(json: objectJSON)
-                            return updating[recoveredIndex]
-                        } else {
-                            return T(json: objectJSON)
+                    case .success(let json):
+                        let jsonArray: [JSON] = json[name].array ?? []
+                        let resultArray: [T] = jsonArray.map {
+                            objectJSON in
+                            if let recoveredIndex = updating.index(where: { $0.hasEqualId(json: objectJSON) }) {
+                                updating[recoveredIndex].update(json: objectJSON)
+                                return updating[recoveredIndex]
+                            } else {
+                                return T(json: objectJSON)
+                            }
                         }
+
+                        CoreDataHelper.instance.save()
+                        fulfill((resultArray))
                     }
 
-                    CoreDataHelper.instance.save()
-                    fulfill((resultArray))
                 }
-
             }
         }
     }
